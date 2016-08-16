@@ -53,7 +53,9 @@
         
         T.unbind('mousewheel.streamscroll').on('mousewheel.streamscroll', function (e) {
             var data = T.data('streamscroll');
-            if (data.last === 0 && (e.originalEvent.wheelDeltaY !== 0 || e.originalEvent.wheelDeltaX !== 0)) {
+            var deltaY = e.originalEvent.wheelDeltaY || e.originalEvent.wheelDelta || 0;
+            var deltaX = e.originalEvent.wheelDeltaX || e.originalEvent.wheelDelta || 0;
+            if (data.last === 0 && (deltaY !== 0 || deltaX !== 0)) {
                 // Callback to say scrolling has begun
                 data.s.onScrollBegin.call(T[0], {originalEvent: e.originalEvent});
             }
@@ -61,17 +63,17 @@
             data.s.onScroll.call(T[0], {originalEvent: e.originalEvent});
             if (+data.s.axis === $.streamScroll.SCROLL_Y || +data.s.axis === $.streamScroll.SCROLL_BOTH) {
                 // If the caller wants to scroll the Y axis, do so
-                T.scrollTop((T.scrollTop() + data.s.offsetX) - e.originalEvent.wheelDeltaY);
+                T.scrollTop((T.scrollTop() + data.s.offsetX) - deltaY);
             }
             if (+data.s.axis === $.streamScroll.SCROLL_X || +data.s.axis === $.streamScroll.SCROLL_BOTH) {
                 // If the caller wants to scroll the X axis, do so
-                T.scrollTop((T.scrollLeft() + data.s.offsetY) - e.originalEvent.wheelDeltaX);
+                T.scrollTop((T.scrollLeft() + data.s.offsetY) - deltaX);
             }
-            if (data.last !== 0 && (e.originalEvent.wheelDeltaY === 0 && e.originalEvent.wheelDeltaX === 0)) {
+            if (data.last !== 0 && (deltaY === 0 && deltaX === 0)) {
                 // Scrolling has ended
                 data.s.onScrollEnd.call(T[0], {originalEvent: e.originalEvent});
             }
-            data.last = e.originalEvent.wheelDeltaY || e.originalEvent.wheelDeltaX;
+            data.last = deltaY || deltaX;
             return false;
         });
         
